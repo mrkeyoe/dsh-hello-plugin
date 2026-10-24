@@ -1,5 +1,7 @@
 # dsh-hello-plugin
 
+[![CI](https://github.com/mrkeyoe/dsh-hello-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/mrkeyoe/dsh-hello-plugin/actions/workflows/ci.yml)
+
 一个**最小可用的 DeepSeek Harness（dsh）插件**：向宿主注册一个 `hello_plugin` 工具。
 它不是玩具 demo 的堆砌，而是把「一个 dsh 插件到底需要哪些文件、每个文件负责什么」压缩到能一眼看完的程度 —— 抄这份骨架改名即可起步。
 
