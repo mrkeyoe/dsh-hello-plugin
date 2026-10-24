@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: smoke / node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20', '22', '24']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Show toolchain versions
+        run: |
+          node --version
+          npm --version
+
+      # The smoke test bootstraps its own @deepseek-ai/dsh-tools stub,
+      # so no `npm install` is needed and no network is required.
+      - name: Offline smoke test
+        run: node test/smoke.mjs
+
+  pack:
+    name: pack / publish contents
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Guards the classic publish bug: a file that the loader needs
+      # (cordis.patch.yml / lib/index.js) missing from `files`,
+      # which ships a package that can never load.
+      - name: npm pack dry run
+        run: npm pack --dry-run 2>&1 | tee pack.log
+
+      - name: Assert required files are in the tarball
+        run: |
+          set -eu
+          for f in package.json lib/index.js cordis.patch.yml README.md LICENSE; do
+            if grep -qF "$f" pack.log; then
+              echo "ok: $f"
+            else
+              echo "::error::missing from package tarball: $f"
+              exit 1
+            fi
+          done
+
+      - name: Assert test/ is NOT published
+        run: |
+          set -eu
+          if grep -qF "test/smoke.mjs" pack.log; then
+            echo "::error::test/ should not be published (listed in package.json files)"
+            exit 1
+          fi
+          echo "ok: test/ excluded"
