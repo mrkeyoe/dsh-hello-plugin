@@ -1,6 +1,6 @@
 {
   "name": "dsh-hello-plugin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A minimal DeepSeek Harness (dsh) plugin: registers one host tool `hello_plugin`. Serves as a copyable starting point for writing your own DSH plugin.",
   "license": "MIT",
   "author": "mrkeyoe",
