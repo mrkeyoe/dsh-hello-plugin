@@ -1,0 +1,13 @@
+# Bundle patch layer.
+#
+# A dsh bundle contributes loader rows through this file. The row `name` is the
+# npm package name; the loader resolves it and loads the package's `main` entry
+# as a plain Cordis plugin (host half).
+#
+# `id` is the stable row identity used by later patch layers and by the profile's
+# own cordis.patch.yml to override `config` for this plugin.
+- insert:
+    - id: dsh-hello-plugin
+      name: dsh-hello-plugin
+      config:
+        greeting: 你好
