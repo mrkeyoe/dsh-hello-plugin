@@ -1,0 +1,9 @@
+# 统一换行符：仓库内一律 LF，检出端也不做 CRLF 转换。
+# 理由：插件是纯 JS/JSON/YAML + Markdown，发布到 npm 后由 Linux 容器和
+# Windows 主机共同消费；Windows 端若检出成 CRLF，smoke 测试读到的字符串
+# 会带上 \r，导致断言失败——这是最难查的一类跨平台 bug。
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
